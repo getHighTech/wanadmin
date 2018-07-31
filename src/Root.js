@@ -1,17 +1,16 @@
 /* This is the Root component mainly initializes Redux and React Router. */
 
-import React from '../../Library/Caches/typescript/2.9/node_modules/@types/react';
-import PropTypes from '../../Library/Caches/typescript/2.9/node_modules/@types/prop-types';
-import { Provider } from '../../Library/Caches/typescript/2.9/node_modules/@types/react-redux';
-import { Switch, Route } from '../../Library/Caches/typescript/2.9/node_modules/@types/react-router-dom';
-import { ConnectedRouter } from '../../Library/Caches/typescript/2.9/node_modules/@types/react-router-redux';
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Provider } from 'react-redux';
+import { Switch, Route } from 'react-router-dom';
+import { ConnectedRouter } from 'react-router-redux';
 import history from './common/history';
 
 
 import { Dimmer, Loader, Advertisement } from 'semantic-ui-react'
-import Axios from 'axios';
+import { getToken } from './token';
 
-const uuidv4 = require('../../Library/Caches/typescript/2.9/node_modules/@types/uuid/v4');
 
 function renderRouteConfigV3(routes, contextPath) {
   // Resolve route config object in React Router v3.
@@ -60,21 +59,34 @@ export default class Root extends React.Component {
     }
   }
   componentDidMount(){
-    let uuid = uuidv4();
-    Axios.get("http://test2.10000cars.cn/api/v1/get_token?uuid="+uuid).then(rlt=>{
-      console.log(rlt.data);
-      if(rlt.data.msg === "device error"){
-        this.setState({loading: false, isValid: true});
-      }else{
-        this.setState({loading: false})
-      }
       
-    }).catch(err=>{
-      this.setState({loading: false})
-    })
+      getToken().then(key=>{
+        console.log(key);
+        
+        if(key.token && key.uuid){
+          this.setState({
+            loading: false
+          })
+        }else{
+          this.setState({
+            loading: false,
+            isValid: true
+          })
+        }
+  
+     }).catch(err=>{
+       console.log("token fail", err);
+       this.setState({
+        loading: false,
+        isValid: true
+      })
+       
+     });
    
   }
   render() {
+    console.log(this.state);
+    
     const children = renderRouteConfigV3(this.props.routeConfig, '/');
     return (
       <Provider store={this.props.store}>

@@ -1,8 +1,8 @@
 
 import Axios from 'axios';
-import { setStore, getStore } from '../localStorage';
+import { setStore, getStore } from './localStorage';
 
-const uuidv4 = require('../../Library/Caches/typescript/2.9/node_modules/@types/uuid/v4');
+const uuidv4 = require('uuid/v4');
 
 
 export async function getToken(){
